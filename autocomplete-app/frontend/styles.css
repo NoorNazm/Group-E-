@@ -1,0 +1,14 @@
+styles.css
+body {
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
