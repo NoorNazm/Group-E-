@@ -33,10 +33,25 @@ function displaySuggestions(suggestions) {
 
 showLcsButton.addEventListener('click', async () => {
     const word1 = input.value;
-    const word2 = suggestionsList.firstChild ? suggestionsList.firstChild.textContent : '';
 
-    if (!word1 || !word2) {
-        alert("Please select a word from suggestions!");
+    if (!word1) {
+        alert("Please enter a word.");
+        return;
+    }
+
+
+    let word2 = '';
+    if (suggestionsList.firstChild) {
+        word2 = suggestionsList.firstChild.textContent;
+    } else {
+
+        const response = await fetch(`http://localhost:5000/autocomplete?prefix=${word1}`);
+        const suggestions = await response.json();
+        word2 = suggestions.length > 0 ? suggestions[0] : '';
+    }
+
+    if (!word2) {
+        alert("No similar word found in the dictionary.");
         return;
     }
 

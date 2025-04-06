@@ -1,5 +1,17 @@
 def get_autocomplete_suggestions(word_list, prefix, max_suggestions=5):
-    return [word for word in word_list if word.startswith(prefix)][:max_suggestions]
+    similarities = []
+
+    for word in word_list:
+        _, _, lcs_length, _ = calculate_lcs(prefix, word)
+        similarity = lcs_length / max(len(prefix), len(word)) if max(len(prefix), len(word)) > 0 else 0
+        similarities.append((word, similarity))
+
+
+    similarities.sort(key=lambda x: (-x[1], len(x[0])))
+
+
+    return [word for word, score in similarities[:max_suggestions]]
+
 
 
 def calculate_lcs(word1, word2):
