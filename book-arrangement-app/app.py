@@ -25,7 +25,30 @@ def permutation_dp(n, r):
 
     return dp_list, int(dp[n][r])
 
+@app.route('/')
+def index():
+    return render_template('index.html')
 
+
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    data = request.get_json()
+    n = int(data['n'])
+    r = int(data['r'])
+
+    if r > n:
+        return jsonify({
+            'error': 'Group size cannot exceed total books'
+        }), 400
+
+    dp_table, result = permutation_dp(n, r)
+
+    return jsonify({
+        'result': result,
+        'dp_table': dp_table,
+        'n': n,
+        'r': r
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
