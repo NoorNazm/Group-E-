@@ -1,0 +1,69 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Arrangements Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card main-card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center mb-0">Book Arrangements Calculator</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="totalBooks" class="form-label">Total number of books (n):</label>
+                                <input type="number" class="form-control" id="totalBooks" min="0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="groupSize" class="form-label">Group size to arrange (r):</label>
+                                <input type="number" class="form-control" id="groupSize" min="0">
+                            </div>
+                        </div>
+                        <div class="text-center mb-4">
+                            <button id="calculateBtn" class="btn btn-primary btn-lg">Calculate</button>
+                        </div>
+                        <div id="resultBox" class="result-box text-center p-3 mb-3 d-none">
+                            <h3>Solution:</h3>
+                            <div id="resultValue" class="result-value"></div>
+                        </div>
+                        <div class="text-center">
+                            <button id="showTableBtn" class="btn btn-secondary btn-lg d-none">Show DP Table</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="dpTableModal" tabindex="-1" aria-labelledby="dpTableModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="dpTableModalLabel">Dynamic Programming Table</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dpTable">
+                                <!-- Table will be populated by JavaScript -->
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
