@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVM Iris Dataset Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .model-container {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .plot-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .plot-image {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .model-info {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .badge {
+            font-size: 100%;
+            margin-left: 10px;
+        }
+        .model-header {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SVM Models on Iris Dataset</h1>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="alert alert-info">
+                    <h4>About this application</h4>
+                    <p>This application demonstrates Support Vector Machine (SVM) models with different kernels (RBF, Linear, and Polynomial) trained on the Iris dataset. For simplicity, only the first two features of the dataset are used for visualization, and we focus on two classes only.</p>
+                    <p><strong>The visualization shows:</strong></p>
+                    <ul>
+                        <li>Decision boundaries (colored regions)</li>
+                        <li>Support vectors (points with black outlines)</li>
+                        <li>For linear kernel: separation line and margin lines</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 text-center mb-4">
+                <button id="loadModels" class="btn btn-primary">Load SVM Models</button>
+            </div>
+        </div>
+
+        <div id="loadingIndicator" class="loading d-none">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Training models and generating visualizations...</p>
+        </div>
+
+
+        <div id="modelsContainer" class="row">
+            <!-- RBF Kernel -->
+            <div class="col-md-12 model-container d-none" id="rbfModel">
+                <div class="model-header">
+                    <h2>RBF Kernel</h2>
+                    <span id="rbfAccuracy" class="badge bg-success"></span>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="plot-container">
+                            <img id="rbfPlot" class="plot-image" src="" alt="RBF Kernel Decision Boundary">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="model-info">
+                            <h4>RBF Kernel Information</h4>
+                            <p>The Radial Basis Function (RBF) kernel is a popular kernel function used in various kernelized learning algorithms. It can model complex non-linear decision boundaries.</p>
+                            <p><strong>Support Vectors:</strong> <span id="rbfSupportVectors"></span></p>
+                            <p><strong>Formula:</strong> K(x, y) = exp(-γ||x - y||²)</p>
+                            <p><strong>Advantages:</strong></p>
+                            <ul>
+                                <li>Effective for non-linear data</li>
+                                <li>Works well when classes are not linearly separable</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Linear Kernel -->
+            <div class="col-md-12 model-container d-none" id="linearModel">
+                <div class="model-header">
+                    <h2>Linear Kernel</h2>
+                    <span id="linearAccuracy" class="badge bg-success"></span>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="plot-container">
+                            <img id="linearPlot" class="plot-image" src="" alt="Linear Kernel Decision Boundary">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="model-info">
+                            <h4>Linear Kernel Information</h4>
+                            <p>The Linear kernel is the simplest kernel function. It creates a linear decision boundary between classes.</p>
+                            <p><strong>Support Vectors:</strong> <span id="linearSupportVectors"></span></p>
+                            <p><strong>Formula:</strong> K(x, y) = x<sup>T</sup>y</p>
+                            <p><strong>Features:</strong></p>
+                            <ul>
+                                <li>Solid line: Decision boundary</li>
+                                <li>Dashed lines: Margin boundaries</li>
+                                <li>Points on margins: Support vectors</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Polynomial Kernel -->
+            <div class="col-md-12 model-container d-none" id="polyModel">
+                <div class="model-header">
+                    <h2>Polynomial Kernel</h2>
+                    <span id="polyAccuracy" class="badge bg-success"></span>
+                </div>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="plot-container">
+                            <img id="polyPlot" class="plot-image" src="" alt="Polynomial Kernel Decision Boundary">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="model-info">
+                            <h4>Polynomial Kernel Information</h4>
+                            <p>The Polynomial kernel can model curved or higher-dimensional patterns in the data, creating non-linear decision boundaries.</p>
+                            <p><strong>Support Vectors:</strong> <span id="polySupportVectors"></span></p>
+                            <p><strong>Formula:</strong> K(x, y) = (γx<sup>T</sup>y + r)<sup>d</sup></p>
+                            <p><strong>Characteristics:</strong></p>
+                            <ul>
+                                <li>Degree parameter (d) determines boundary complexity</li>
+                                <li>Can capture more complex patterns than linear kernel</li>
+                                <li>More interpretable than RBF for some problems</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#loadModels').click(function() {
+                $(this).prop('disabled', true);
+                $('#loadingIndicator').removeClass('d-none');
+
+                // Call the API to get all models' data
+                $.ajax({
+                    url: 'http://localhost:5000/api/all',
+                    method: 'GET',
+                    success: function(data) {
+                        $('#loadingIndicator').addClass('d-none');
+
+                        // RBF Kernel
+                        $('#rbfPlot').attr('src', 'data:image/png;base64,' + data.rbf.plot);
+                        $('#rbfAccuracy').text('Accuracy: ' + data.rbf.accuracy.toFixed(2) + '%');
+                        $('#rbfSupportVectors').text(data.rbf.n_support_vectors);
+                        $('#rbfModel').removeClass('d-none');
+
+                        // Linear Kernel
+                        $('#linearPlot').attr('src', 'data:image/png;base64,' + data.linear.plot);
+                        $('#linearAccuracy').text('Accuracy: ' + data.linear.accuracy.toFixed(2) + '%');
+                        $('#linearSupportVectors').text(data.linear.n_support_vectors);
+                        $('#linearModel').removeClass('d-none');
+
+                        // Polynomial Kernel
+                        $('#polyPlot').attr('src', 'data:image/png;base64,' + data.poly.plot);
+                        $('#polyAccuracy').text('Accuracy: ' + data.poly.accuracy.toFixed(2) + '%');
+                        $('#polySupportVectors').text(data.poly.n_support_vectors);
+                        $('#polyModel').removeClass('d-none');
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loadingIndicator').addClass('d-none');
+                        alert('Error loading models: ' + error);
+                        $('#loadModels').prop('disabled', false);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
