@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iris Flower Classification</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌸 Iris Flower Classification</h1>
+            <p>Using k-Nearest Neighbors (k-NN) Algorithm</p>
+        </header>
+
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="prediction">Prediction</div>
+                <div class="tab" data-tab="training">Training & Evaluation</div>
+                <div class="tab" data-tab="visualization">Visualization</div>
+                <div class="tab" data-tab="about">About</div>
+            </div>
+        </div>
+
+        <div id="prediction" class="tab-content active">
+            <div class="dashboard">
+                <div class="card">
+                    <h2>Predict Iris Species</h2>
+                    <p>Enter the measurements below to classify the iris flower.</p>
+
+                    <form id="prediction-form">
+                        <div class="input-group">
+                            <label for="sepal-length">Sepal Length (cm)</label>
+                            <input type="number" id="sepal-length" step="0.1" min="0" required value="5.1">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="sepal-width">Sepal Width (cm)</label>
+                            <input type="number" id="sepal-width" step="0.1" min="0" required value="3.5">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="petal-length">Petal Length (cm)</label>
+                            <input type="number" id="petal-length" step="0.1" min="0" required value="1.4">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="petal-width">Petal Width (cm)</label>
+                            <input type="number" id="petal-width" step="0.1" min="0" required value="0.2">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="k-value">k Value</label>
+                            <input type="number" id="k-value" min="1" max="50" required value="5">
+                        </div>
+
+                        <button type="submit" class="btn">Predict Species</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Prediction Result</h2>
+                    <div id="prediction-result">
+                        <div class="species-badge species-setosa">Setosa</div>
+                        <div class="result">
+                            Enter measurements and click "Predict" to see results
+                        </div>
+                        <div id="confidence-chart" class="chart-container" style="display: none;">
+                            <canvas id="confidenceCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="training" class="tab-content">
+            <div class="card">
+                <h2>Model Training</h2>
+                <p>Train the k-NN model with the iris dataset and evaluate its performance.</p>
+
+                <div class="slider-container">
+                    <label for="train-test-split">Test Size (%)</label>
+                    <input type="range" class="slider" id="train-test-split" min="10" max="50" value="30">
+                    <div class="slider-value">30%</div>
+                </div>
+
+                <div class="slider-container">
+                    <label for="k-neighbors">k Neighbors</label>
+                    <input type="range" class="slider" id="k-neighbors" min="1" max="20" value="5">
+                    <div class="slider-value">5</div>
+                </div>
+
+                <button id="train-btn" class="btn">Train Model</button>
+
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                </div>
+
+                <div id="training-results" style="display: none;">
+                    <h3>Confusion Matrix</h3>
+                    <div id="confusionMatrix"></div>
+
+                    <h3>Metrics</h3>
+                    <div class="metrics-container">
+                        <div class="metric-card">
+                            <div class="metric-title">Accuracy</div>
+                            <div class="metric-value" id="accuracy">0.0</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-title">Precision</div>
+                            <div class="metric-value" id="precision">0.0</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-title">Recall</div>
+                            <div class="metric-value" id="recall">0.0</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-title">F1 Score</div>
+                            <div class="metric-value" id="f1">0.0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="hyperparameter-card" style="display: none;">
+                <h2>Hyperparameter Tuning</h2>
+                <p>Finding the optimal k value using cross-validation</p>
+
+                <div class="chart-container">
+                    <canvas id="hyperparameterCanvas"></canvas>
+                </div>
+
+                <div class="result" id="best-k-result"></div>
+            </div>
+        </div>
+
+        <div id="visualization" class="tab-content">
+            <div class="card">
+                <h2>Data Visualization</h2>
+                <div class="flex-row">
+                    <div class="input-group">
+                        <label for="x-feature">X-axis Feature</label>
+                        <select id="x-feature">
+                            <option value="0">Sepal Length</option>
+                            <option value="1">Sepal Width</option>
+                            <option value="2" selected>Petal Length</option>
+                            <option value="3">Petal Width</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="y-feature">Y-axis Feature</label>
+                        <select id="y-feature">
+                            <option value="0">Sepal Length</option>
+                            <option value="1">Sepal Width</option>
+                            <option value="2">Petal Length</option>
+                            <option value="3" selected>Petal Width</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="scatterCanvas"></canvas>
+                </div>
+
+                <button id="plot-decision-btn" class="btn">Plot Decision Boundaries</button>
+                <div class="chart-container" id="decision-boundary-container" style="display: none;">
+                    <canvas id="decisionCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="about" class="tab-content">
+            <div class="card">
+                <h2>About This Project</h2>
+                <p>This is a web-based implementation of the Iris Flower Classification using k-Nearest Neighbors (k-NN) algorithm. The project fulfills the requirements of the Mini-Project (Group E).</p>
+
+                <h3>Dataset Information</h3>
+                <p>The UCI Iris Dataset contains measurements of 150 iris flowers from three species:</p>
+                <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                    <li>Setosa</li>
+                    <li>Versicolor</li>
+                    <li>Virginica</li>
+                </ul>
+
+                <p>Each sample has four features:</p>
+                <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                    <li>Sepal length (cm)</li>
+                    <li>Sepal width (cm)</li>
+                    <li>Petal length (cm)</li>
+                    <li>Petal width (cm)</li>
+                </ul>
+
+                <h3>k-NN Algorithm</h3>
+                <p>k-Nearest Neighbors is a simple, instance-based learning algorithm that:</p>
+                <ol style="margin-left: 2rem; margin-bottom: 1rem;">
+                    <li>Stores all available cases</li>
+                    <li>Classifies new cases based on a similarity measure (distance function)</li>
+                    <li>Uses a majority vote of its k nearest neighbors</li>
+                </ol>
+
+                <h3>Project Implementation</h3>
+                <p>This implementation includes:</p>
+                <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                    <li>Data loading and preprocessing</li>
+                    <li>Model training with custom k values</li>
+                    <li>Model evaluation with metrics (accuracy, precision, recall, F1-score)</li>
+                    <li>Hyperparameter tuning to find the optimal k value</li>
+                    <li>Interactive prediction for new samples</li>
+                    <li>Visualization of the data and decision boundaries</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
