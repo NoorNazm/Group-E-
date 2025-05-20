@@ -426,73 +426,73 @@ function updatePredictionResult(result) {
 
 
 function updateConfusionMatrix(matrix) {
-    const confusionMatrixEl = document.getElementById('confusionMatrix');
-    confusionMatrixEl.innerHTML = '';
+    const cmEl = document.getElementById('confusionMatrix');
+    cmEl.innerHTML = '';
 
-    // Calculate row and column totals
-    const rowTotals = matrix.map(row => row.reduce((sum, val) => sum + val, 0));
-    const colTotals = matrix[0].map((_, i) => matrix.reduce((sum, row) => sum + row[i], 0));
-    const grandTotal = rowTotals.reduce((sum, val) => sum + val, 0);
+    const rowTotals  = matrix.map(r => r.reduce((s,v) => s+v, 0));
+    const colTotals  = matrix[0].map((_,i) => matrix.reduce((s,r) => s + r[i], 0));
+    const grandTotal = rowTotals.reduce((s,v) => s+v, 0);
 
-    // Header row
-    const emptyHeader = document.createElement('div');
-    emptyHeader.className = 'matrix-cell matrix-header';
-    emptyHeader.textContent = 'Actual \\ Predicted';
-    confusionMatrixEl.appendChild(emptyHeader);
 
+    cmEl.appendChild(Object.assign(document.createElement('div'), {
+        className: 'matrix-cell matrix-header',
+        textContent: '' 
+    }));
+   
     labelNames.forEach(name => {
-        const headerCell = document.createElement('div');
-        headerCell.className = 'matrix-cell matrix-header';
-        headerCell.textContent = name;
-        confusionMatrixEl.appendChild(headerCell);
+        cmEl.appendChild(Object.assign(document.createElement('div'), {
+            className: 'matrix-cell matrix-header',
+            textContent: name
+        }));
     });
+   
+    cmEl.appendChild(Object.assign(document.createElement('div'), {
+        className: 'matrix-cell matrix-header',
+        textContent: 'Total'
+    }));
 
-
-    const rowTotalHeader = document.createElement('div');
-    rowTotalHeader.className = 'matrix-cell matrix-header';
-    rowTotalHeader.textContent = 'Total';
-    confusionMatrixEl.appendChild(rowTotalHeader);
-
-
+    // ---- DATA ROWS ----
     matrix.forEach((row, i) => {
-        const rowHeader = document.createElement('div');
-        rowHeader.className = 'matrix-cell matrix-header';
-        rowHeader.textContent = labelNames[i];
-        confusionMatrixEl.appendChild(rowHeader);
-
-        row.forEach((cell, j) => {
-            const cellEl = document.createElement('div');
-            cellEl.className = i === j ? 'matrix-cell matrix-true' : 'matrix-cell matrix-false';
-            cellEl.textContent = cell;
-            confusionMatrixEl.appendChild(cellEl);
+       
+        cmEl.appendChild(Object.assign(document.createElement('div'), {
+            className: 'matrix-cell matrix-header',
+            textContent: labelNames[i]
+        }));
+       
+        row.forEach((count, j) => {
+            cmEl.appendChild(Object.assign(document.createElement('div'), {
+                className: count === row[j] && j === i
+                    ? 'matrix-cell matrix-true'
+                    : 'matrix-cell matrix-false',
+                textContent: count
+            }));
         });
-
-
-        const rowTotal = document.createElement('div');
-        rowTotal.className = 'matrix-cell matrix-header';
-        rowTotal.textContent = rowTotals[i];
-        confusionMatrixEl.appendChild(rowTotal);
+       
+        cmEl.appendChild(Object.assign(document.createElement('div'), {
+            className: 'matrix-cell matrix-header',
+            textContent: rowTotals[i]
+        }));
     });
 
-
-    const footerLabel = document.createElement('div');
-    footerLabel.className = 'matrix-cell matrix-header';
-    footerLabel.textContent = 'Total';
-    confusionMatrixEl.appendChild(footerLabel);
+  
+    cmEl.appendChild(Object.assign(document.createElement('div'), {
+        className: 'matrix-cell matrix-header',
+        textContent: 'Total'
+    }));
 
     colTotals.forEach(total => {
-        const footerCell = document.createElement('div');
-        footerCell.className = 'matrix-cell matrix-header';
-        footerCell.textContent = total;
-        confusionMatrixEl.appendChild(footerCell);
+        cmEl.appendChild(Object.assign(document.createElement('div'), {
+            className: 'matrix-cell matrix-header',
+            textContent: total
+        }));
     });
-
-
-    const grandTotalCell = document.createElement('div');
-    grandTotalCell.className = 'matrix-cell matrix-header';
-    grandTotalCell.textContent = grandTotal;
-    confusionMatrixEl.appendChild(grandTotalCell);
+    
+    cmEl.appendChild(Object.assign(document.createElement('div'), {
+        className: 'matrix-cell matrix-header',
+        textContent: grandTotal
+    }));
 }
+
 
 
 function updateMetrics(metrics) {
