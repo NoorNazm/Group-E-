@@ -154,7 +154,7 @@ input:focus, select:focus {
 
 #confusionMatrix {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr repeat(3, 1fr) 1fr;
     gap: 0.5rem;
     margin-top: 1rem;
 }
